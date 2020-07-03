@@ -6,6 +6,7 @@ import { trigger, transition, useAnimation } from '@angular/animations';
 import { shrinkHeight } from 'src/app/animations/sizing';
 import { fadeOut } from 'src/app/animations/fading';
 import { AlertController, IonList } from '@ionic/angular';
+import { PlatformService } from 'src/app/services/platform.service';
 
 @Component({
   selector: 'app-todo-collections',
@@ -27,7 +28,8 @@ export class TodoCollectionsComponent implements OnInit {
   
   constructor(
     public todoService: TodoService,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public platformService: PlatformService
   ) { }
 
   ngOnInit() {
@@ -71,6 +73,7 @@ export class TodoCollectionsComponent implements OnInit {
     });
 
     await alert.present().then(() => {
+      if (this.platformService.current!=='desktop') return;
       const firstInput: any = document.querySelector('ion-alert input');
       firstInput.focus();
       return;

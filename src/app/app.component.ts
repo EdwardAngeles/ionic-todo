@@ -6,6 +6,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { fadeInDown, fadeOut } from './animations/fading';
 import { shrinkHeight } from './animations/sizing';
+import { PlatformService } from './services/platform.service';
 
 @Component({
   selector: 'app-root',
@@ -22,9 +23,10 @@ export class AppComponent {
   currentPlatform: 'desktop' | 'mobile';
   
   constructor(
-    public platform: Platform,
+    private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
+    public platformService: PlatformService
   ) {
     this.initializeApp();
     this.updatePlatform();
@@ -36,6 +38,8 @@ export class AppComponent {
     
     if (window.innerWidth > 450) this.currentPlatform = 'desktop';
     if (window.innerWidth < 450) this.currentPlatform = 'mobile';
+    
+    this.platformService.current = this.currentPlatform;
     
     console.log('window.innerWidth', window.innerWidth);
     console.log('update platform...', this.currentPlatform);

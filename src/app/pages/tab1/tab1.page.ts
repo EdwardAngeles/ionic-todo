@@ -7,6 +7,7 @@ import { TodoCollection } from 'src/app/models/todo-collection.model';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { fadeIn } from 'src/app/animations/fading';
 import { DOCUMENT } from '@angular/common';
+import { PlatformService } from 'src/app/services/platform.service';
 
 @Component({
   selector: 'app-tab1',
@@ -25,7 +26,8 @@ export class Tab1Page {
     public todoService: TodoService,
     public router: Router,
     public alertController: AlertController,
-    public renderer: Renderer2
+    public renderer: Renderer2,
+    public platformService: PlatformService
   ) {}
   
   async addNewCollection() {
@@ -57,6 +59,7 @@ export class Tab1Page {
     });
 
     await alert.present().then(() => {
+      if (this.platformService.current!=='desktop') return;
       const firstInput: any = document.querySelector('ion-alert input');
       firstInput.focus();
       return;
