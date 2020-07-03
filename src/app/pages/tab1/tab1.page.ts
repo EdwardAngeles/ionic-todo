@@ -37,7 +37,10 @@ export class Tab1Page {
         {
           name: 'title',
           type: 'text',
-          placeholder: 'Name of the list'
+          placeholder: 'Name of the list',
+          attributes: {
+            autoComplete: 'off'
+          }
         }
       ],
       buttons: [

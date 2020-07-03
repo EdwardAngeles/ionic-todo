@@ -49,7 +49,10 @@ export class TodoCollectionsComponent implements OnInit {
           name: 'title',
           type: 'text',
           value: collection.title,
-          placeholder: 'Name of the list'
+          placeholder: 'Name of the list',
+          attributes: {
+            autoComplete: 'off'
+          }
         }
       ],
       buttons: [
