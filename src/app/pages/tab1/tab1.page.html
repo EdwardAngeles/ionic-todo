@@ -7,15 +7,11 @@
     </ion-toolbar>
   </ion-header> -->
   
-  <ion-text *ngIf="collections.length === 0" class="ion-text-center" color="warning">
-    <h2 @fadeIn>
-      <span>
-        Nothing to show here
-        <!-- <br>
-        Add a new list -->
-      </span>
-    </h2>
-  </ion-text>
+  <div class="ion-padding-top">
+    <ion-text *ngIf="collections.length === 0" class="ion-text-center" color="warning">
+      <h2 @fadeIn><span>No list to show here<br> Add a new list</span></h2>
+    </ion-text>
+  </div>
   
   <app-todo-collections
     *ngIf="collections.length > 0"
