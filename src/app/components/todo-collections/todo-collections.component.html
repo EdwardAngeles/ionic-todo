@@ -1,8 +1,12 @@
 <ion-list>
   
-  <!-- <ion-item-sliding *ngFor="let todoCollection of (todoService.todoCollections | collectionFilter:currentTab === 'tab1'? 'notcompleted' : 'completed')" @shrinkHeight @fadeOut> -->
-  <ion-item-sliding *ngFor="let todoCollection of todoService.getNotCompleted()" @shrinkHeight @fadeOut>
-  <!-- <ion-item-sliding *ngFor="let todoCollection of [] @shrinkHeight @fadeOut> -->
+  <ion-item-sliding *ngFor="let todoCollection of collections" @shrinkHeight @fadeOut @fadeInDown>
+    
+    <ion-item-options side="start">
+      <ion-item-option color="primary" (click)="editCollection(todoCollection)">
+        <ion-icon slot="icon-only" name="create"></ion-icon>
+      </ion-item-option>
+    </ion-item-options>
     
     <ion-item
       routerLink="/tabs/{{currentTab}}/add/{{todoCollection.id}}"

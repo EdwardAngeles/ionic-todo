@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
 import { TodoCollection } from '../models/todo-collection.model';
+import { of } from 'rxjs';
+import { deepCopy } from './../utils/utils';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TodoService {
-
-  todoCollections: TodoCollection[] = [];
+  
+  collections: TodoCollection[] = [];
   
   constructor() {
     this.loadData();
@@ -14,42 +16,43 @@ export class TodoService {
   
   addCollection(title: string) {
     const newCollection = new TodoCollection(title);
-    this.todoCollections.push(newCollection);
+    this.collections.push(newCollection);
     
     this.saveData();
     return newCollection;
   }
   
   getCollection(id: string) {
-    return this.todoCollections.find((collection) => collection.id === id);
+    return this.collections.find((collection) => collection.id === id);
   }
   
-  getNotCompleted() {
-    return this.todoCollections.filter((collection) => !collection.isCompleted);
+  getCollections() {
+    return of(this.collections);
   }
   
   removeCollection(collection: TodoCollection) {
-    this.todoCollections = this.todoCollections.filter((c) => c.id !== collection.id);
+    this.collections = this.collections.filter((c) => c.id !== collection.id);
     this.saveData();
+    return of(this.collections);
   }
   
-  updateCollection(update: TodoCollection) {
-    let collectionToUpdate = this.getCollection(update.id);
-    if (!collectionToUpdate) return;
+  updateCollection(newCollection: TodoCollection) {
+    let oldCollection: TodoCollection = this.getCollection(newCollection.id);
+    if (!oldCollection) return;
     
-    collectionToUpdate = {...update};
+    oldCollection = deepCopy(newCollection);
     this.saveData();
     
-    return collectionToUpdate;
+    return oldCollection;
   }
   
   loadData() {
     if (!localStorage.getItem('data')) return;
-    this.todoCollections = JSON.parse( localStorage.getItem('data') );
+    this.collections = JSON.parse( localStorage.getItem('data') );
   }
   
   saveData() {
-    localStorage.setItem('data', JSON.stringify(this.todoCollections));
+    localStorage.setItem('data', JSON.stringify(this.collections));
   }
   
 }

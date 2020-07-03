@@ -1,29 +1,41 @@
 import { TodoService } from './../../services/todo.service';
-import { Component } from '@angular/core';
+import { Component, Renderer2, Inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { map, take } from 'rxjs/operators';
+import { TodoCollection } from 'src/app/models/todo-collection.model';
+import { trigger, transition, useAnimation } from '@angular/animations';
+import { fadeIn } from 'src/app/animations/fading';
+import { DOCUMENT } from '@angular/common';
 
 @Component({
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
-  styleUrls: ['tab1.page.scss']
+  styleUrls: ['tab1.page.scss'],
+  animations: [
+    trigger('fadeIn', [transition(':enter', useAnimation(fadeIn))])
+  ]
 })
 export class Tab1Page {
 
+  collections: TodoCollection[] = [];
+  
   constructor(
+    @Inject(DOCUMENT) private document: Document,
     public todoService: TodoService,
     public router: Router,
-    public alertController: AlertController
+    public alertController: AlertController,
+    public renderer: Renderer2
   ) {}
   
   async addNewCollection() {
     const alert = await this.alertController.create({
-      header: 'New Collection',
+      header: 'New List',
       inputs: [
         {
           name: 'title',
           type: 'text',
-          placeholder: 'Name of the collection'
+          placeholder: 'Name of the list'
         }
       ],
       buttons: [
@@ -37,13 +49,32 @@ export class Tab1Page {
             if (data.title.length === 0) return;
             
             const newCollection = this.todoService.addCollection(data.title);
-            this.router.navigate(['tabs', 'tab1', 'add', newCollection.id]);
+            // this.router.navigate(['tabs', 'tab1', 'add', newCollection.id]);
+            this.featchCollections();
           }
         }
       ]
     });
 
-    await alert.present();
+    await alert.present().then(() => {
+      const firstInput: any = document.querySelector('ion-alert input');
+      firstInput.focus();
+      return;
+    });
+  }
+  
+  ionViewWillEnter() {
+    this.featchCollections();
+  }
+  
+  onCollectionRemoved() {
+    this.featchCollections();
+  }
+  
+  featchCollections() {
+    this.todoService.getCollections()
+    .pipe(take(1), map(collections => collections.filter(item => !item.isCompleted)))
+    .subscribe(collections => this.collections = collections);
   }
 
 }

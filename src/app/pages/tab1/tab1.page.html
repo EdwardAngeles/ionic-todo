@@ -1,10 +1,4 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Todo
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<app-tab-header title="Todo"></app-tab-header>
 
 <ion-content [fullscreen]="true">
   <!-- <ion-header collapse="condense">
@@ -13,9 +7,23 @@
     </ion-toolbar>
   </ion-header> -->
   
-  <app-todo-collections [currentTab]="'tab1'" filter="notcompleted"></app-todo-collections>
+  <ion-text *ngIf="collections.length === 0" class="ion-text-center" color="warning">
+    <h2 @fadeIn>
+      <span>
+        Nothing to show here
+        <!-- <br>
+        Add a new list -->
+      </span>
+    </h2>
+  </ion-text>
   
-
+  <app-todo-collections
+    *ngIf="collections.length > 0"
+    [currentTab]="'tab1'"
+    [collections]="collections"
+    (collectionRemoved)="featchCollections()">
+  </app-todo-collections>
+  
   
   <ion-fab vertical="bottom" horizontal="end" slot="fixed" (click)="addNewCollection()">
     <ion-fab-button>

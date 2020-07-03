@@ -1,15 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { fadeInDown } from './../../animations/fading';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild } from '@angular/core';
 import { TodoService } from 'src/app/services/todo.service';
 import { TodoCollection } from 'src/app/models/todo-collection.model';
 import { trigger, transition, useAnimation } from '@angular/animations';
 import { shrinkHeight } from 'src/app/animations/sizing';
 import { fadeOut } from 'src/app/animations/fading';
+import { AlertController, IonList } from '@ionic/angular';
 
 @Component({
   selector: 'app-todo-collections',
   templateUrl: './todo-collections.component.html',
   styleUrls: ['./todo-collections.component.scss'],
   animations: [
+    trigger(  'fadeInDown', [transition(':enter', useAnimation( fadeInDown))]),
     trigger('shrinkHeight', [transition(':leave', useAnimation(shrinkHeight))]),
     trigger('fadeOut', [transition(':leave', useAnimation(fadeOut))])
   ]
@@ -17,32 +20,61 @@ import { fadeOut } from 'src/app/animations/fading';
 export class TodoCollectionsComponent implements OnInit {
 
   @Input() currentTab: 'tab1'|'tab2';
-  @Input() filter: 'all'|'completed'|'notcompleted' = 'all';
+  @Input() collections: TodoCollection[] = [];
+  @Output() collectionRemoved = new EventEmitter<TodoCollection>();
+  
+  @ViewChild(IonList) ionList: IonList;
   
   constructor(
-    public todoService: TodoService
+    public todoService: TodoService,
+    public alertController: AlertController
   ) { }
 
-  ngOnInit() {}
-  
-  public get collections() : TodoCollection[] {
-    const collections = this.todoService.todoCollections;
-    
-    if (this.filter === 'all') {
-      return collections;
-    }
-    if (this.filter === 'completed') {
-      return collections.filter((collection) => collection.isCompleted);
-    }
-    if (this.filter === 'notcompleted') {
-      return collections.filter((collection) => !collection.isCompleted);
-    }
-    
+  ngOnInit() {
+    console.log('ionList', this.ionList);
   }
-  
   
   removeCollection(collection: TodoCollection) {
     this.todoService.removeCollection(collection);
+    this.collectionRemoved.emit(collection);
+  }
+  
+  async editCollection(collection: TodoCollection) {
+    const alert = await this.alertController.create({
+      header: 'Edit List',
+      inputs: [
+        {
+          name: 'title',
+          type: 'text',
+          value: collection.title,
+          placeholder: 'Name of the list'
+        }
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel',
+          handler: () => this.ionList.closeSlidingItems()
+        },
+        {
+          text: 'Update',
+          handler: (data) => {
+            if (data.title.length === 0) return;
+            
+            collection.title = data.title;
+            this.todoService.updateCollection(collection);
+            
+            this.ionList.closeSlidingItems();
+          }
+        }
+      ]
+    });
+
+    await alert.present().then(() => {
+      const firstInput: any = document.querySelector('ion-alert input');
+      firstInput.focus();
+      return;
+    });
   }
 
 }

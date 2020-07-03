@@ -1,7 +1,7 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="tabs"></ion-back-button>
+      <ion-back-button [defaultHref]="backUrl"></ion-back-button>
     </ion-buttons>
     <ion-title>{{ todoCollection.title }}</ion-title>
   </ion-toolbar>
@@ -15,14 +15,14 @@
       <ion-item class="ion-margin-horizontal">
         <ion-label position="floating">New Todo</ion-label>
         <ion-note slot="end">
-          10:45 AM
+          Description
         </ion-note>
         <ion-input ngModel #item="ngModel" type='text' name="item" minlength="3" required></ion-input>
       </ion-item>
       
       <div class="ion-margin-horizontal ion-text-end" style="opacity: 0.5; margin-top: 8px;">
-        <ion-text @fadeInDown color="danger" *ngIf="item.errors?.required  && (item.touched || form.submitted)"><span>This field is required</span></ion-text>
-        <ion-text @fadeInDown color="danger" *ngIf="item.errors?.minlength && (item.touched || form.submitted)">This field must have at least 3 characters</ion-text>
+        <ion-text @fadeInDown color="danger" *ngIf="item.errors?.required  && (item.touched && form.submitted)"><span>This field is required</span></ion-text>
+        <ion-text @fadeInDown color="danger" *ngIf="item.errors?.minlength && (item.touched && form.submitted)">This field must have at least 3 characters</ion-text>
       </div>
       
       <div class="ion-text-end ion-margin-top ion-margin-horizontal">
@@ -37,7 +37,7 @@
   <br>
   
   <ion-text *ngIf="todoCollection.todoItems.length === 0" class="ion-text-center" color="warning">
-    <h2 class="animate__animated animate__fadeIn" style="opacity: 0.5;">No items addded.</h2>
+    <h2 class="animate__animated animate__fadeIn">No items addded.</h2>
   </ion-text>
   
   <ion-list *ngIf="todoCollection.todoItems.length > 0" class="animate__animated animate__fadeIn">
@@ -46,7 +46,6 @@
       <ion-label><h2>Things Todo</h2></ion-label>
     </ion-list-header>
     
-    <!-- class="animate__animated animate__fadeInRight" -->
     <ion-item-sliding *ngFor="let item of todoCollection.todoItems; let i = index" @fadeInDown @fadeOutLeft @shrinkHeight>
       <ion-item>
         <ion-checkbox slot="start" [(ngModel)]="item.isCompleted" (ionChange)="onItemChange(item)"></ion-checkbox>
